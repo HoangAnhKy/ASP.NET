@@ -1,0 +1,34 @@
+Nhơ thêm startup.Auth.cs bằng cách thay quyền truy cập lúc khởi tạo
+
+B1: Update package đang có sau đó cài thêm packege 
+
+	cách 1: Install-Package Owin.Security.Providers -Version 2.26.0
+
+	cách 2: Tìm kiếm Owin.Security.Providers
+
+B2: Vào Startup.Auth.cs mở comment mạng xã hội cần dùng, sau đó thêm id và Secret
+
+hoặc Tạo id và secret ở trong web.config
+
+vd: tạo thêm key và value của facebook với value là id và secret
+
+	<add key="FacebookAppId" value="555120829511166"/>
+    	<add key="FacebookAppSecret" value="add5ff85f597e06a3a6f0c0938197816"/>
+
+sau đó về Startup.Auth.cs thêm lại giá trị
+
+	app.UseFacebookAuthentication(
+      cách 1
+              //appId: "555120829511166",
+              //appSecret: "add5ff85f597e06a3a6f0c0938197816"
+      cách 2
+              //appId: ConfigurationManager.AppSettings["FacebookAppId"],
+              //appSecret: ConfigurationManager.AppSettings["FacebookAppSecret"]);
+
+B3: Với các app Oauth đã tạo sẵn thì ta chỉ thêm điều hướng về
+
+vd: 
+	google => https://localhost:44300/signin-google
+	facebook => https://localhost:44300/signin-facebook
+
+https://www.youtube.com/watch?v=Pz2UtcaLnxc

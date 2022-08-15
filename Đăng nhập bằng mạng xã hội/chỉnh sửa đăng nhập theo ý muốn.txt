@@ -1,0 +1,59 @@
+B1: tạo view đăng nhập sau đó lấy các thông tin cần dùng như sau
+
+
+@using Microsoft.Owin.Security
+@{
+    var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
+}
+
+<form action="@Url.Action("ExternalLogin", "Login")" method="post" class="col justify-content-center">
+    @Html.AntiForgeryToken()
+    <div id="socialLoginList">
+        <p>
+            @foreach (AuthenticationDescription p in loginProviders)
+            {
+                <button type="submit" class="btn btn-success m-2" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="Log in using your @p.Caption account">@p.AuthenticationType</button>
+            }
+        </p>
+    </div>
+</form>
+
+B2: bên controller chỉ cần lấy các file như sau
+
++ ExternalLogin
++ ExternalLoginCallback
++ dữ liệu bên region
+
+B3: tại file ExternalLoginCallback có thể chỉnh sửa lại tùy theo nhu cầu riêng
+
+vd:
+ public async Task<ActionResult> ExternalLoginCallback(string returnUrl)
+        {
+		// lấy thông tin
+            var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync();
+
+            if (loginInfo == null)
+            {
+                return RedirectToAction("Index");
+            }
+            try
+            {
+		    // Kiểm tra dữ liệu
+                var data = db.Auths.Where(acc => acc.email == loginInfo.Email).FirstOrDefault();
+                if(data == null)
+                {
+                    ViewBag.ReturnUrl = returnUrl;
+                    ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
+                    return View("Register", new Auth { email = loginInfo.Email, name = loginInfo.DefaultUserName });
+                }
+            }
+            catch
+            {
+                ViewBag.ReturnUrl = returnUrl;
+                ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
+                return View("Register", new Auth { email = loginInfo.Email, name = loginInfo.DefaultUserName });
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
+sau khi chỉnh sửa như ý muốn có thể xóa tất cả các file phụ đi, chỉ cần dữ lại identity trong model

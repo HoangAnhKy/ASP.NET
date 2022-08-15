@@ -1,0 +1,32 @@
+B1: Tạo enum
+
+vd:
+ public enum Status
+    {
+        [Display(Name = "Đang học")]
+        Đang_học = 1,
+        Bỏ_học = 2,
+        Bảo_lưu = 3,
+    }
+
+B2: gán giá trị tại model
+
+[Display(Name = "StatusStudent")]
+[Required(ErrorMessage = "Trạng thái không được để trống")]
+public Status StatusStudent { get; set; }
+
+B3: sử dụng HTML Helper để đọc dữ liệu lên
+c1:
+    @Html.EnumDropDownListFor(model => model.StatusStudent , "--- Trạng thái ---", new { @class = "form-control m-2" })
+c2:
+    @Html.DropDownList("mystatus", EnumHelper.GetSelectList(typeof(DNTU.Models.Status)), "select type")
+c3:
+  
+  <select>
+    @foreach(var item in EnumHelper.GetSelectList(typeof(DNTU.Models.Status)))
+    {
+        <option value="@item.Value">@item.Text</option>
+    }
+</select>
+
+muốn lấy giá trị để lưu lại bên controller ta dùng Request

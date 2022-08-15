@@ -1,0 +1,14 @@
+﻿@model customer_login.Models.Auth
+@{
+    ViewBag.Title = "Register";
+}
+
+<h2>Register</h2>
+
+
+<form action="@Url.Action("Register", "Login",  new { ReturnUrl = ViewBag.ReturnUrl })" method="post" class="col justify-content-center">
+    @Html.AntiForgeryToken()
+    <input type="email" name="email" class="form-control m-2" value="@Model.email" />
+    <input type="text" name="name" class="form-control m-2" value="@Model.name" />
+    <button class="form-control btn-success btn m-2">Xác nhận</button>
+</form>

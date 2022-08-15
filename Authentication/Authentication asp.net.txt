@@ -1,0 +1,70 @@
+							Sử dụng Authentication trong asp.net
+
+* Lưu ý
+
+- với bước 1, bước 2 dùng để tạo if else các thứ nếu cần quyền ở view, Layout (dùng để đặt điều kiện điều hướng như logout hoặc login) 
+
+- từ bước 3 tới bước 5 dùng để phân quyền.
+
+- để phân quyền toàn bộ trang web thì dùng [Authorize] và để trang nào không phân quyền thì dùng [AllowAnonymous]
+
+- có thể sử dụng [Authorize] kết hợp với bước 1 và bước 2 để bắt buộc người dùng đăng nhập mới cho truy cập link
+
+------------------------------------------------------------------------------------------------------------------------
+
+B1: vào web.config > system.web thêm authentication
+
+```sh
+
+	<authentication mode="Forms">
+		<forms loginUrl="Đường dẫn tới controller login"></forms>
+	</authentication>
+
+```
+B2: Về controller chèn thêm câu lênh dể lưu quyền sử dụng user vào
+
+```
+	FormsAuthentication.SetAuthCookie(Truyền biếu lưu quyền hoặc tên vào, false);
+```
+- Muốn thoát thì sửa dụng FromsAuthentication.SignOut(); 
+
+- Muốn kiểm tra thì sử dụng User.Identity.Name
+
+B3: Xác nhận quyền với [Authorize] bằng cách sử dụng [Authorize(Roles = "Admin")], 
+
+nếu muốn add thêm quyền thì [Authorize(Roles = "Admin|Vip")]
+
+B4: tạo file UserRoleProvider kế thừa từ RoleProvider sau đó thêm toàn bộ nội dung bên file AuthRole.txt bên cạnh
+	
+hoặc sử dụng mẹo như sau
+```
+	- Tạo mới class đặt tên là UserRoleProvider
+
+	- kế thừa lại RoleProvider vd (UserRoleProvider : RoleProvider)
+
+	- bôi đen tên class sau đó hover vào gợi ý chọn implement abstract class
+
+	- kiểm tới GetRolesForUser sau đó lấy toàn bộ quyền qua bằng câu lệnh linq 
+	
+	vd:
+	public override string[] GetRolesForUser(string username)
+        {
+            using (DNTUEntities _Context = new DNTUEntities())
+            {
+                var userRoles = (from user in _Context.Logins
+                                 select user.name).ToArray();
+                return userRoles;
+            }
+        }
+```
+B5:  vào web.config > system.web thêm câu lệnh sau
+
+```
+	<roleManager defaultProvider="userRoleProvider" enabled="true">
+      <providers>
+        <clear/>
+        <add name="userRoleProvider" type="Tên project.Models.UserRoleProvider"/>
+      </providers>
+    </roleManager>
+
+```
